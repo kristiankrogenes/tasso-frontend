@@ -12,12 +12,17 @@ export default function NavStack() {
     const Tab = createBottomTabNavigator();
 
     return (
-        <Tab.Navigator initialRouteName="Home">
+        <Tab.Navigator 
+            initialRouteName="Home"
+            screenOptions={{ headerStyle: { backgroundColor: '#427AA1' } }}
+        >
             <Tab.Screen 
-                name="High Score"
+                name="HIGH SCORES"
                 component={HighScoreScreen}
                 options={{
-                    tabBarLabel: 'High Score',
+                    // tabBarActiveBackgroundColor: '#FFF000',
+                    
+                    tabBarLabel: 'high_score',
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="table" color={color} size={size} />
                     ),
