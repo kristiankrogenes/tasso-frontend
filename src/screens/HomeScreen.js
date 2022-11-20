@@ -1,7 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity } from 'react-native';
 
+
 export default function HomeScreen() {
+    
     return (
         <View style={styles.homeScreenContainer}>
             <Text>This is the Home Screen.</Text>

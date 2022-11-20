@@ -1,15 +1,40 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity } from 'react-native';
+import { useIsFocused } from '@react-navigation/native'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function ProfileScreen() {
+import { signOut } from "firebase/auth";
+import { auth } from '../../firebase';
+
+export default function ProfileScreen({ navigation }) {
+  const isFocused = useIsFocused();
+  const [loggedInUserEmail, setLoggedInUserEmail] = React.useState(auth.currentUser?.email);
+
+  React.useEffect(() => {
+    setLoggedInUserEmail(auth.currentUser?.email);
+  }, [isFocused]);
+
+  const handleEditProfile = () => {
+    console.log("Edit Profile button pressed.");
+  }
+
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        navigation.navigate("Login")
+      })
+      .catch(error => alert(error.message));
+  }
+
+
+
   return (
     <View style={styles.profileScreenContainer}>
 
       <View>
         <View style={styles.nameContainer}>
           <MaterialCommunityIcons name="account" size={200} />
-          <Text numberOfLines={2} style={styles.nameText}>Kristian Walseth Krøgenes</Text>
+          <Text numberOfLines={2} style={styles.nameText}>{loggedInUserEmail}</Text>
         </View>
         <View style={styles.userInfoContainer}>
           <Text style={styles.clubNameBox}>Asker Golfklubb</Text>
@@ -19,15 +44,15 @@ export default function ProfileScreen() {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => console.log("EDIT PROFILE Button Pressed.")}
+          onPress={handleEditProfile}
         >
           <Text style={{fontSize: 25}}>Edit Profile</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => console.log("LOGOUT Button Pressed.")}
+          onPress={handleSignOut}
         >
-          <Text style={{fontSize: 25}}>Log Out</Text>
+          <Text style={{fontSize: 25}}>Sign Out</Text>
         </TouchableOpacity>
       </View>
 
