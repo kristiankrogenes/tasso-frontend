@@ -49,7 +49,7 @@ export default function NavStack() {
                     ),
                 }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
                 name="Login"
                 component={LoginScreen}
                 options={{
@@ -58,7 +58,7 @@ export default function NavStack() {
                         <MaterialCommunityIcons name="account" color={color} size={size} />
                     ),
                 }}
-            />
+            /> */}
         </Tab.Navigator>
     );
 }
