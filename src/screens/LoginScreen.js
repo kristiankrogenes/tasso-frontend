@@ -1,7 +1,7 @@
 import * as React from 'react';
 // import { useNavigation } from '@react-navigation/core';
 // import { NavigationContainer } from '@react-navigation/native';
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native';
 
 import { auth } from '../../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
@@ -10,14 +10,13 @@ function LoginScreen({ navigation }) {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [renderCount, setRenderCount] = React.useState(0);
-    // const navigation = useNavigation();
 
     React.useEffect(() => {
         console.log("RE-RENDER");
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
                 console.log("User logged in.")
-                navigation.navigate("Home");
+                navigation.navigate("Profile");
             } else {
                 console.log("Not logged in.");
             }
@@ -50,6 +49,7 @@ function LoginScreen({ navigation }) {
         <KeyboardAvoidingView
             style={styles.container}
             behavior="padding"
+            onPress={() => {Keyboard.dismiss}}
         >
             <View style={styles.inputContainer}>
                 <TextInput
