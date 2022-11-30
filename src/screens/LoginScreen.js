@@ -15,7 +15,7 @@ function LoginScreen({ navigation }) {
         console.log("RE-RENDER");
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
-                console.log("User logged in.")
+                console.log("User logged in.");
                 navigation.navigate("NavStack");
             } else {
                 console.log("Not logged in.");

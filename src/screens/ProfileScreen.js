@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity } from 'react-native';
-import { useIsFocused } from '@react-navigation/native'
+import { useIsFocused } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { signOut } from "firebase/auth";
@@ -16,6 +16,7 @@ export default function ProfileScreen({ navigation }) {
 
   const handleEditProfile = () => {
     console.log("Edit Profile button pressed.");
+    navigation.navigate("EditProfile");
   }
 
   const handleSignOut = () => {
