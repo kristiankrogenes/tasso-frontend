@@ -2,40 +2,44 @@ import * as React from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 
-import { auth } from '../../firebase';
+import { auth, db } from '../../firebase';
+import { collection, getDocs, addDoc, updateDoc, doc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
-function EditProfileScreen({ navigation }) {
+function EditProfileScreen({ route, navigation }) {
+    const [user, setUser] = React.useState({});
     const [email, setEmail] = React.useState('');
-    const [firstname, setFirstname] = React.useState('');
-    const [lastname, setLastname] = React.useState('');
+    const [name, setName] = React.useState('');
     const [handicap, setHandicap] = React.useState('');
     const [homeClub, setHomeClub] = React.useState('');
 
     const isFocused = useIsFocused();
 
     React.useEffect(() => {
-        setEmail(auth.currentUser?.email);
+        setName(route.params.name);
+        setHandicap(route.params.hcp.toString());
+        setHomeClub(route.params.home_club);
     }, [isFocused]);
 
-    const handleSaveButton = () => {
+    const updateUserDoc = async (e) => {
+        const userRef = doc(db, "users", route.params.id);
+        try {
+            const docRef = await updateDoc(userRef, {
+                name: name,
+                hcp: handicap,
+                home_club: homeClub
 
+            });
+            console.log("Document updated with ID: ", userRef.id);
+            navigation.navigate("Profile")
+        } catch (e) {
+            console.error("Error updating document: ", e);
+        }
     };
 
-    
-
-    const InputBox = (props) => {
-        return (
-            <View>
-                <Text>{props.inputTitle}</Text>
-                <TextInput
-                    placeholder={props.inputValue}
-                    value={props.inputValue}
-                    onChangeText={text => props.inputSetValue(text)}
-                    style={styles.input}
-                />
-            </View>
-        )
+    const handleSaveButton = () => {
+        console.log("Save button pressed.");
+        updateUserDoc();
     };
 
     return (
@@ -44,29 +48,64 @@ function EditProfileScreen({ navigation }) {
             behavior="padding"
             onPress={() => {Keyboard.dismiss}}
         >
-            <View>
-                <Text>Account Details</Text>
+            <View style={{width: "100%"}}>
+                <View style={{width: "100%", borderBottomColor: 'lightgrey', borderBottomWidth: 1}}>
+                    <Text>Account Details</Text>
+                </View>
+                
+                <View style={styles.inputContainer}>
+                    <View style={styles.inputBox}>
+                        <Text>Email</Text>
+                        <TextInput
+                            placeholder={email}
+                            value={email}
+                            // onChangeText={text => setEmail(text)}
+                            style={styles.input}
+                        />
+                    </View>
+                    <View style={styles.inputBox}>
+                        <Text>Full Name</Text>
+                        <TextInput
+                            placeholder={name}
+                            value={name}
+                            onChangeText={text => setName(text)}
+                            style={styles.input}
+                        />
+                    </View>
+                    <View style={styles.inputBox}>
+                        <Text>Hcp</Text>
+                        <TextInput
+                            placeholder={handicap}
+                            value={handicap}
+                            onChangeText={text => setHandicap(text)}
+                            style={styles.input}
+                        />
+                    </View>
+                    <View style={styles.inputBox}>
+                        <Text>Home Club</Text>
+                        <TextInput
+                            placeholder={homeClub}
+                            value={homeClub}
+                            onChangeText={text => setHomeClub(text)}
+                            style={styles.input}
+                        />
+                    </View>
+                </View>
             </View>
-            
-            <View style={styles.inputContainer}>
-                <InputBox inputTitle="First Name" inputValue={firstname} inputSetValue={setFirstname} />
-                <InputBox inputTitle="Last Name" inputValue={lastname} inputSetValue={setLastname} />
-                <InputBox inputTitle="Hcp" inputValue={handicap} inputSetValue={setHandicap} />
-                <InputBox inputTitle="Home Club" inputValue={homeClub} inputSetValue={setHomeClub} />
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleSaveButton}
+                >
+                    <Text style={{fontSize: 25}}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate("Profile")}
+                >
+                    <Text style={{fontSize: 25}}>Go Back</Text>
+                </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleSaveButton}
-            >
-                <Text style={{fontSize: 25}}>Save</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={styles.button}
-                onPress={() => navigation.navigate("Profile")}
-            >
-                <Text style={{fontSize: 25}}>Go Back</Text>
-            </TouchableOpacity>
         </KeyboardAvoidingView>
     );
 }
@@ -76,18 +115,29 @@ export default EditProfileScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    display: 'flex',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    padding: 20,
+  },
+  buttonContainer: {
+    width: "100%",
+    marginBottom: 40,
   },
   button: {
     alignItems: "center",
     backgroundColor: "#a6d7de",
+    width: "100%",
     padding: 10,
     margin: 5,
     borderRadius: 10
   },
   inputContainer: {
-    width: '80%'
+    width: '100%'
+  },
+  inputBox: {
+    width: "100%",
+    marginTop: 10
   },
   input: {
     backgroundColor: 'white',

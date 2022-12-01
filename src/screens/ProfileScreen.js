@@ -4,19 +4,38 @@ import { useIsFocused } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { signOut } from "firebase/auth";
-import { auth } from '../../firebase';
+import { auth, db } from '../../firebase';
+import { collection, getDocs, getDoc, addDoc, updateDoc, doc } from "firebase/firestore";
 
 export default function ProfileScreen({ navigation }) {
+
   const isFocused = useIsFocused();
-  const [loggedInUserEmail, setLoggedInUserEmail] = React.useState(auth.currentUser?.email);
+  const [loggedInUser, setLoggedInUser] = React.useState({name: "NaN", hcp: "NaN", home_club: "NaN"});
 
   React.useEffect(() => {
-    setLoggedInUserEmail(auth.currentUser?.email);
+    // setLoggedInUserEmail(auth.currentUser?.email);
+    const loggedInUser = auth.currentUser;
+    fetchDataFromFirestore(loggedInUser.uid);
   }, [isFocused]);
+
+  const fetchDataFromFirestore = async (uid) => {
+    // await getDocs(collection(db, "users"))
+    //   .then((querySnapshot) => {               
+    //     const newData = querySnapshot.docs
+    //       .filter((doc) => doc.id === uid);
+    //     setLoggedInUser({id: newData[0].id, ...newData[0].data()});   
+    //     console.log("2", loggedInUser);
+    // });
+    // await getDoc(doc(db, "users", uid)).then(qsnap => {
+    //   console.log("OK", qsnap.data());
+    // })
+    const newData = await getDoc(doc(db, "users", uid));
+    setLoggedInUser({id: newData.id, ...newData.data()});
+  };
 
   const handleEditProfile = () => {
     console.log("Edit Profile button pressed.");
-    navigation.navigate("EditProfile");
+    navigation.navigate("EditProfile", loggedInUser);
   }
 
   const handleSignOut = () => {
@@ -27,19 +46,17 @@ export default function ProfileScreen({ navigation }) {
       .catch(error => alert(error.message));
   }
 
-
-
   return (
     <View style={styles.profileScreenContainer}>
 
       <View>
         <View style={styles.nameContainer}>
           <MaterialCommunityIcons name="account" size={200} />
-          <Text numberOfLines={2} style={styles.nameText}>{loggedInUserEmail}</Text>
+          <Text numberOfLines={2} style={styles.nameText}>{loggedInUser.name}</Text>
         </View>
         <View style={styles.userInfoContainer}>
-          <Text style={styles.clubNameBox}>Asker Golfklubb</Text>
-          <Text style={styles.hcpBox}>17.5</Text>
+          <Text style={styles.clubNameBox}>{loggedInUser.home_club}</Text>
+          <Text style={styles.hcpBox}>{loggedInUser.hcp}</Text>
         </View>
       </View>
       <View style={styles.buttonContainer}>
