@@ -3,7 +3,8 @@ import * as React from 'react';
 // import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native';
 
-import { auth } from '../../firebase';
+import { auth, db } from '../../firebase';
+import { collection, getDocs, addDoc, updateDoc, doc, setDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
 function LoginScreen({ navigation }) {
@@ -15,7 +16,7 @@ function LoginScreen({ navigation }) {
         console.log("RE-RENDER");
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
-                console.log("User logged in.")
+                console.log("User logged in.");
                 navigation.navigate("NavStack");
             } else {
                 console.log("Not logged in.");
@@ -25,12 +26,23 @@ function LoginScreen({ navigation }) {
         return unsubscribe;
     }, [renderCount]);
 
+    const addNewUserDoc = async (uid) => {
+        try {
+            const docRef = await setDoc(doc(db, `users/${uid}`), {name: "NaN", hcp: 54, home_club: "NaN"});
+            // console.log("Document written with ID: ", docRef.id);
+            console.log("OK YES");
+          } catch (e) {
+            console.error("Error adding document: ", e);
+          }
+    }
+
     const handleSignUp = () => {
         createUserWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
                 setRenderCount(renderCount+1);
-                console.log('Registered with:', user.email);
+                console.log('Registered with:', user.email, user.uid);
+                addNewUserDoc(user.uid);
             })
             .catch(error => alert(error.message));
     }
