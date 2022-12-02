@@ -3,7 +3,7 @@ import * as React from 'react';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import HighScoreScreen from '../screens/HighScoreScreen';
-import LoginScreen from '../screens/LoginScreen';
+import LoginScreen from '../screens/WelcomeScreen/WelcomeScreen';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
