@@ -1,6 +1,4 @@
 import * as React from 'react';
-// import { useNavigation } from '@react-navigation/core';
-// import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native';
 
 import { auth, db } from '../../firebase';
@@ -13,7 +11,6 @@ function LoginScreen({ navigation }) {
     const [renderCount, setRenderCount] = React.useState(0);
 
     React.useEffect(() => {
-        console.log("RE-RENDER");
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
                 console.log("User logged in.");
@@ -22,39 +19,37 @@ function LoginScreen({ navigation }) {
                 console.log("Not logged in.");
             }
         });
-
-        return unsubscribe;
+        // return unsubscribe;
     }, [renderCount]);
 
     const addNewUserDoc = async (uid) => {
-        try {
-            const docRef = await setDoc(doc(db, `users/${uid}`), {name: "NaN", hcp: 54, home_club: "NaN"});
-            // console.log("Document written with ID: ", docRef.id);
-            console.log("OK YES");
-          } catch (e) {
-            console.error("Error adding document: ", e);
-          }
+      try {
+        const docRef = await setDoc(doc(db, `users/${uid}`), {name: "NaN", hcp: 54, home_club: "NaN"});
+        console.log("Document written with ID: ", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     }
 
     const handleSignUp = () => {
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(userCredentials => {
-                const user = userCredentials.user;
-                setRenderCount(renderCount+1);
-                console.log('Registered with:', user.email, user.uid);
-                addNewUserDoc(user.uid);
-            })
-            .catch(error => alert(error.message));
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(userCredentials => {
+          const user = userCredentials.user;
+          setRenderCount(renderCount+1);
+          console.log('Registered with:', user.email, user.uid);
+          addNewUserDoc(user.uid);
+        })
+        .catch(error => alert(error.message));
     }
 
     const handleLogin = () => {
-        signInWithEmailAndPassword(auth, email, password)
-        .then(userCredentials => {
-            const user = userCredentials.user;
-            setRenderCount(renderCount+1);
-            console.log('Logged in with:', user.email);
-        })
-        .catch(error => alert(error.message));
+      signInWithEmailAndPassword(auth, email, password)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        setRenderCount(renderCount+1);
+        console.log('Logged in with:', user.email);
+      })
+      .catch(error => alert(error.message));
     }
 
     return (

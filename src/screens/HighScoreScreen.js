@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { StyleSheet, ScrollView, Text, View, Button, Image, TouchableOpacity } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list'
 import ScoreListItem from '../components/ScoreListItem';
@@ -61,7 +61,7 @@ export default function HighScoreScreen() {
             <ScrollView style={styles.scrollViewBox}>
                 <View style={styles.scoreListContainer}>
                     {hsRoundData.map((round) => (
-                        <View style={{marginTop: 8, marginBottom: 8}}>
+                        <View key={round.id} style={{marginTop: 8, marginBottom: 8}}>
                             <ScoreListItem 
                                 key={round.id}
                                 id={round.id}
