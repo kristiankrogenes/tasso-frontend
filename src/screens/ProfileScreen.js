@@ -51,7 +51,7 @@ export default function ProfileScreen({ navigation }) {
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {
-        navigation.navigate("Login")
+        navigation.navigate("Welcome")
       })
       .catch(error => alert(error.message));
   }

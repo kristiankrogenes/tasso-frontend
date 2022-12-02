@@ -4,7 +4,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import NavStack from './src/components/NavStack';
-import LoginScreen from './src/screens/LoginScreen';
+import WelcomeScreen from './src/screens/WelcomeScreen/WelcomeScreen';
+import LoginScreen from './src/screens/WelcomeScreen/LoginScreen';
+import RegisterScreen from './src/screens/WelcomeScreen/RegisterScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 
 
@@ -15,7 +17,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator 
-        initialRouteName="Login" 
+        initialRouteName="Welcome" 
         screenOptions={{
           headerLeft: null, 
           gestureEnabled: false, 
@@ -28,8 +30,25 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen 
+          name="Welcome"
+          component={WelcomeScreen} 
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen 
           name="Login"
           component={LoginScreen} 
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen 
+          name="Register"
+          component={RegisterScreen} 
+          options={{
+            headerShown: false,
+          }}
         />
         <Stack.Screen 
           name="EditProfile"
