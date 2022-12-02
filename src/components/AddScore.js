@@ -4,19 +4,27 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { SelectList } from "react-native-dropdown-select-list";
 import { Form, FormItem } from "react-native-form-component";
 import { auth, db } from "../../firebase";
-import { collection, addDoc, getDocs, getDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, doc } from "firebase/firestore";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function AddScore() {
   const [selectedCourse, setSelectedCourse] = React.useState("");
-  const [selectedCourseId, setSelectedCourseId] = React.useState("");
   const [score, setScore] = React.useState();
   const [date, setDate] = React.useState(new Date());
   const [courses, setCourses] = React.useState();
+  const [userId, setUserId] = React.useState();
   const scoreInput = React.useRef();
+
+  const isFocused = useIsFocused();
 
   React.useEffect(() => {
     fetchGolfCourses();
-  }, []);
+  }, [isFocused]);
+
+  React.useEffect(() => {
+    const loggedInUser = auth.currentUser;
+    setUserId(loggedInUser.uid);
+  }, [isFocused]);
 
   const fetchGolfCourses = async () => {
     const courseList = [];
@@ -33,28 +41,21 @@ export default function AddScore() {
     setCourses(courseList);
   };
 
-  const fetchGolfCourseIdByName = async (courseName) => {
-    const course = await getDoc(
-      collection(db, "golf_courses", courseName)
-    ).then(setSelectedCourseId(course.id));
-    console.log(selectedCourseId);
-  };
-
   const handleSubmit = () => {
     try {
       addNewScoreDoc();
       setDate(new Date());
       setScore(null);
       setSelectedCourse(null);
-      //   fetchGolfCourseIdByName(selectedCourse);
     } catch (e) {}
   };
 
   const addNewScoreDoc = async () => {
     try {
       const docRef = await addDoc(collection(db, `round_scores`), {
+        user: doc(db, "users", userId),
         score: parseInt(score),
-        course: selectedCourse,
+        course: doc(db, "golf_courses", selectedCourse),
         date: date,
       });
       console.log("Round written with ID: ", docRef.id);
