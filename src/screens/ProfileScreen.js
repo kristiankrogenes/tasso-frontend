@@ -7,31 +7,41 @@ import { signOut } from "firebase/auth";
 import { auth, db } from '../../firebase';
 import { collection, getDocs, getDoc, addDoc, updateDoc, doc } from "firebase/firestore";
 
+import { fetchUserDataFromFirestore } from '../firestore/queries';
+
 export default function ProfileScreen({ navigation }) {
 
   const isFocused = useIsFocused();
   const [loggedInUser, setLoggedInUser] = React.useState({name: "NaN", hcp: "NaN", home_club: "NaN"});
 
   React.useEffect(() => {
-    // setLoggedInUserEmail(auth.currentUser?.email);
     const loggedInUser = auth.currentUser;
-    fetchDataFromFirestore(loggedInUser.uid);
+    getAndSetUserData(loggedInUser.uid);
   }, [isFocused]);
 
-  const fetchDataFromFirestore = async (uid) => {
-    // await getDocs(collection(db, "users"))
-    //   .then((querySnapshot) => {               
-    //     const newData = querySnapshot.docs
-    //       .filter((doc) => doc.id === uid);
-    //     setLoggedInUser({id: newData[0].id, ...newData[0].data()});   
-    //     console.log("2", loggedInUser);
-    // });
-    // await getDoc(doc(db, "users", uid)).then(qsnap => {
-    //   console.log("OK", qsnap.data());
-    // })
-    const newData = await getDoc(doc(db, "users", uid));
-    setLoggedInUser({id: newData.id, ...newData.data()});
-  };
+  const getAndSetUserData = async (uid) => {
+    const userData = await fetchUserDataFromFirestore(uid);
+    console.log("&&&", userData);
+    setLoggedInUser(userData);
+  }
+
+  // const fetchDataFromFirestore = async (uid) => {
+  //   // await getDocs(collection(db, "users"))
+  //   //   .then((querySnapshot) => {               
+  //   //     const newData = querySnapshot.docs
+  //   //       .filter((doc) => doc.id === uid);
+  //   //     setLoggedInUser({id: newData[0].id, ...newData[0].data()});   
+  //   //     console.log("2", loggedInUser);
+  //   // });
+  //   // await getDoc(doc(db, "users", uid)).then(qsnap => {
+  //   //   console.log("OK", qsnap.data());
+  //   // })
+  //   const newData = await getDoc(doc(db, "users", uid));
+  //   // const courseData = await getDoc(doc(db, "golf_courses", nlytE8G7fzEgVfKXh72i));
+  //   console.log("//", {id: newData.id, ...newData.data()}, newData.data().home_club.id);
+  //   // console.log("##", courseData);
+  //   setLoggedInUser({id: newData.id, ...newData.data()});
+  // };
 
   const handleEditProfile = () => {
     console.log("Edit Profile button pressed.");

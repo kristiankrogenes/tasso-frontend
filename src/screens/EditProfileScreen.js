@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native';
+import { SelectList } from 'react-native-dropdown-select-list';
 import { useIsFocused } from '@react-navigation/native';
 
 import { auth, db } from '../../firebase';
 import { collection, getDocs, addDoc, updateDoc, doc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+
+import { fetchGolfCoursesFromFireStore } from '../firestore/queries';
 
 function EditProfileScreen({ route, navigation }) {
     const [user, setUser] = React.useState({});
@@ -13,13 +16,25 @@ function EditProfileScreen({ route, navigation }) {
     const [handicap, setHandicap] = React.useState('');
     const [homeClub, setHomeClub] = React.useState('');
 
+    const [golfCourses, setGolfCourses] = React.useState([]);
+    const [dropDownGolfCourses, setDropDownGolfCourses] = React.useState([]);
+
     const isFocused = useIsFocused();
 
     React.useEffect(() => {
         setName(route.params.name);
-        setHandicap(route.params.hcp.toString());
+        setHandicap(route.params.hcp);
         setHomeClub(route.params.home_club);
+        getAndSetGolfCoursesData();
     }, [isFocused]);
+
+    const getAndSetGolfCoursesData = async () => {
+        const golfCoursesData = await fetchGolfCoursesFromFireStore();
+        setGolfCourses(golfCoursesData);
+        setDropDownGolfCourses(golfCoursesData.map(course => (
+            {key: course.id, value: course.name}
+        )));
+    }
 
     const updateUserDoc = async (e) => {
         const userRef = doc(db, "users", route.params.id);
@@ -27,8 +42,7 @@ function EditProfileScreen({ route, navigation }) {
             const docRef = await updateDoc(userRef, {
                 name: name,
                 hcp: handicap,
-                home_club: homeClub
-
+                home_club: doc(db, "golf_courses", homeClub)
             });
             console.log("Document updated with ID: ", userRef.id);
             navigation.navigate("Profile")
@@ -83,11 +97,18 @@ function EditProfileScreen({ route, navigation }) {
                     </View>
                     <View style={styles.inputBox}>
                         <Text>Home Club</Text>
-                        <TextInput
+                        {/* <TextInput
                             placeholder={homeClub}
                             value={homeClub}
                             onChangeText={text => setHomeClub(text)}
                             style={styles.input}
+                        /> */}
+                        <SelectList 
+                            setSelected={(val) => setHomeClub(val)} 
+                            data={dropDownGolfCourses} 
+                            save="key"
+                            // dropdownShown={False}
+                            maxHeight={200}
                         />
                     </View>
                 </View>
