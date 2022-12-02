@@ -3,34 +3,64 @@ import { View, StyleSheet, ScrollView, Text } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { SelectList } from "react-native-dropdown-select-list";
 import { Form, FormItem } from "react-native-form-component";
+import { auth, db } from "../../firebase";
+import { collection, addDoc, getDocs, getDoc } from "firebase/firestore";
 
 export default function AddScore() {
   const [selectedCourse, setSelectedCourse] = React.useState("");
+  const [selectedCourseId, setSelectedCourseId] = React.useState("");
   const [score, setScore] = React.useState();
   const [date, setDate] = React.useState(new Date());
+  const [courses, setCourses] = React.useState();
   const scoreInput = React.useRef();
 
-  const golfclub_data = [
-    { key: "1", label: "Asker Golfklubb", value: "Asker Golfklubb", par: 70 },
-    {
-      key: "2",
-      label: "Holtsmark Golfklubb",
-      value: "Holtsmark Golfklubb",
-      par: 72,
-    },
-    { key: "3", label: "Oslo Golfklubb", value: "Oslo Golfklubb", par: 72 },
-    {
-      key: "4",
-      label: "Le Rovedine Golf Club",
-      value: "Le Rovedine Golf Club",
-      par: 72,
-    },
-  ];
+  React.useEffect(() => {
+    fetchGolfCourses();
+  }, []);
+
+  const fetchGolfCourses = async () => {
+    const courseList = [];
+    await getDocs(collection(db, "golf_courses")).then((snapShot) => {
+      snapShot.forEach((item) => {
+        const course = {
+          key: item.id,
+          value: item.data().name,
+          par: item.data().par,
+        };
+        courseList.push(course);
+      });
+    });
+    setCourses(courseList);
+  };
+
+  const fetchGolfCourseIdByName = async (courseName) => {
+    const course = await getDoc(
+      collection(db, "golf_courses", courseName)
+    ).then(setSelectedCourseId(course.id));
+    console.log(selectedCourseId);
+  };
 
   const handleSubmit = () => {
-    console.log({ score });
-    console.log({ selectedCourse });
-    console.log({ date });
+    try {
+      addNewScoreDoc();
+      setDate(new Date());
+      setScore(null);
+      setSelectedCourse(null);
+      //   fetchGolfCourseIdByName(selectedCourse);
+    } catch (e) {}
+  };
+
+  const addNewScoreDoc = async () => {
+    try {
+      const docRef = await addDoc(collection(db, `round_scores`), {
+        score: parseInt(score),
+        course: selectedCourse,
+        date: date,
+      });
+      console.log("Round written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
 
   return (
@@ -52,7 +82,7 @@ export default function AddScore() {
 
           <SelectList
             setSelected={(val) => setSelectedCourse(val)}
-            data={golfclub_data}
+            data={courses}
             save="value"
             placeholder="Select course"
             maxHeight={200}
