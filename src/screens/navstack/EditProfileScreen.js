@@ -3,11 +3,7 @@ import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, Vi
 import { SelectList } from 'react-native-dropdown-select-list';
 import { useIsFocused } from '@react-navigation/native';
 
-import { auth, db } from '../../firebase';
-import { collection, getDocs, addDoc, updateDoc, doc } from "firebase/firestore";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-
-import { fetchGolfCoursesFromFireStore } from '../firestore/queries';
+import { fetchGolfCoursesFromFireStore, updateUserDoc } from '../../firestore/queries';
 
 function EditProfileScreen({ route, navigation }) {
     const [user, setUser] = React.useState({});
@@ -36,24 +32,11 @@ function EditProfileScreen({ route, navigation }) {
         )));
     }
 
-    const updateUserDoc = async (e) => {
-        const userRef = doc(db, "users", route.params.id);
-        try {
-            const docRef = await updateDoc(userRef, {
-                name: name,
-                hcp: handicap,
-                home_club: doc(db, "golf_courses", homeClub)
-            });
-            console.log("Document updated with ID: ", userRef.id);
-            navigation.navigate("Profile")
-        } catch (e) {
-            console.error("Error updating document: ", e);
+    const handleSaveButton = async () => {
+        const docUpdated = await updateUserDoc({uid: route.params.id, name: name, hcp: handicap, club: homeClub});
+        if (docUpdated) {
+            navigation.navigate("Profile");
         }
-    };
-
-    const handleSaveButton = () => {
-        console.log("Save button pressed.");
-        updateUserDoc();
     };
 
     return (
@@ -97,12 +80,6 @@ function EditProfileScreen({ route, navigation }) {
                     </View>
                     <View style={styles.inputBox}>
                         <Text>Home Club</Text>
-                        {/* <TextInput
-                            placeholder={homeClub}
-                            value={homeClub}
-                            onChangeText={text => setHomeClub(text)}
-                            style={styles.input}
-                        /> */}
                         <SelectList 
                             setSelected={(val) => setHomeClub(val)} 
                             data={dropDownGolfCourses} 

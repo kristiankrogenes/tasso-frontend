@@ -4,10 +4,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import NavStack from './src/components/NavStack';
-import WelcomeScreen from './src/screens/WelcomeScreen/WelcomeScreen';
-import LoginScreen from './src/screens/WelcomeScreen/LoginScreen';
-import RegisterScreen from './src/screens/WelcomeScreen/RegisterScreen';
-import EditProfileScreen from './src/screens/EditProfileScreen';
+import { WelcomeScreen, LoginScreen, RegisterScreen } from './src/screens/welcome/index';
+import { EditProfileScreen } from './src/screens/navstack/index';
 
 
 export default function App() {

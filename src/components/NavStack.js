@@ -1,9 +1,6 @@
 import * as React from 'react';
 
-import HomeScreen from '../screens/HomeScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import HighScoreScreen from '../screens/HighScoreScreen';
-import LoginScreen from '../screens/WelcomeScreen/WelcomeScreen';
+import { HomeScreen, ProfileScreen, HighScoreScreen } from '../screens/navstack/index';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -21,8 +18,6 @@ export default function NavStack() {
                 name="HIGH SCORES"
                 component={HighScoreScreen}
                 options={{
-                    // tabBarActiveBackgroundColor: '#FFF000',
-                    
                     tabBarLabel: 'high_score',
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="table" color={color} size={size} />
@@ -49,16 +44,6 @@ export default function NavStack() {
                     ),
                 }}
             />
-            {/* <Tab.Screen
-                name="Login"
-                component={LoginScreen}
-                options={{
-                tabBarLabel: 'login',
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="account" color={color} size={size} />
-                    ),
-                }}
-            /> */}
         </Tab.Navigator>
     );
 }

@@ -7,7 +7,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import AddScore from "../components/AddScore";
+import AddScore from "../../components/AddScore";
 
 export default function HomeScreen() {
   return (

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, ScrollView, Text, View, Button, Image, TouchableOpacity } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list'
-import ScoreListItem from '../components/ScoreListItem';
+import ScoreListItem from '../../components/ScoreListItem';
 
 export default function HighScoreScreen() {
     const hsRoundData = [
