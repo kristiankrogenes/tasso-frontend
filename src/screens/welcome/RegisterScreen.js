@@ -12,22 +12,25 @@ import {
 } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 
-import { auth, db } from '../../../firebase';
-import { collection, getDocs, addDoc, updateDoc, doc, setDoc } from "firebase/firestore";
-import { connectAuthEmulator, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+// import { auth, db } from '../../../firebase';
+// import { collection, getDocs, addDoc, updateDoc, doc, setDoc } from "firebase/firestore";
+// import { connectAuthEmulator, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
 import { fetchGolfCoursesFromFireStore } from '../../firestore/queries';
 import { useIsFocused } from '@react-navigation/native';
+import { RegisterNewUser } from '../../firestore/auth';
 
 function LoginScreen({ navigation }) {
+
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [fullName, setFullName] = React.useState('');
     const [handicap, setHandicap] = React.useState(54);
     const [homeClub, setHomeClub] = React.useState('');
+
     const [dropDownGolfCourses, setDropDownGolfCourses] = React.useState([]);
 
-    const [renderCount, setRenderCount] = React.useState(0);
+    // const [renderCount, setRenderCount] = React.useState(0);
 
     const isFocused = useIsFocused();
 
@@ -36,54 +39,45 @@ function LoginScreen({ navigation }) {
     }, [isFocused]);
 
     const getAndSetGolfCoursesData = async () => {
-        const golfCoursesData = await fetchGolfCoursesFromFireStore();
-        setDropDownGolfCourses(golfCoursesData.map(course => (
-            {key: course.id, value: course.name}
-        )));
+      const golfCoursesData = await fetchGolfCoursesFromFireStore();
+      setDropDownGolfCourses(golfCoursesData.map(course => (
+        {key: course.id, value: course.name}
+      )));
     }
-    React.useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            if (user) {
-                console.log("User logged in.");
-                navigation.navigate("NavStack");
-            } else {
-                console.log("Not logged in.");
-            }
-        });
-    }, [renderCount]);
+    // React.useEffect(() => {
+    //     const unsubscribe = auth.onAuthStateChanged(user => {
+    //         if (user) {
+    //             console.log("User logged in.");
+    //             navigation.navigate("NavStack");
+    //         } else {
+    //             console.log("Not logged in.");
+    //         }
+    //     });
+    // }, [renderCount]);
 
-    const addNewUserDoc = async (uid) => {
-      try {
-        const docRef = await setDoc(doc(db, `users/${uid}`), {
-            name: fullName, 
-            hcp: handicap, 
-            home_club: doc(db, "golf_courses", homeClub)});
-        // console.log("Document written with ID: ", docRef.id);
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
-    }
+    // const addNewUserDoc = async (uid) => {
+    //   try {
+    //     const docRef = await setDoc(doc(db, `users/${uid}`), {
+    //         name: fullName, 
+    //         hcp: handicap, 
+    //         home_club: doc(db, "golf_courses", homeClub)});
+    //     // console.log("Document written with ID: ", docRef.id);
+    //   } catch (e) {
+    //     console.error("Error adding document: ", e);
+    //   }
+    // }
 
     const handleSignUp = () => {
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(userCredentials => {
-          const user = userCredentials.user;
-          setRenderCount(renderCount+1);
-        //   console.log('Registered with:', user.email, user.uid);
-          addNewUserDoc(user.uid);
-        })
-        .catch(error => alert(error.message));
+      // createUserWithEmailAndPassword(auth, email, password)
+      //   .then(userCredentials => {
+      //     const user = userCredentials.user;
+      //     setRenderCount(renderCount+1);
+      //   //   console.log('Registered with:', user.email, user.uid);
+      //     addNewUserDoc(user.uid);
+      //   })
+      //   .catch(error => alert(error.message));
+      RegisterNewUser(email, password, fullName, handicap, homeClub);
     }
-
-    // const handleLogin = () => {
-    //   signInWithEmailAndPassword(auth, email, password)
-    //   .then(userCredentials => {
-    //     const user = userCredentials.user;
-    //     setRenderCount(renderCount+1);
-    //     console.log('Logged in with:', user.email);
-    //   })
-    //   .catch(error => alert(error.message));
-    // }
 
     return (
         <KeyboardAvoidingView

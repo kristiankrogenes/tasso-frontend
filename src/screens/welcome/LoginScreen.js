@@ -11,22 +11,14 @@ import {
     mageBackground 
 } from 'react-native';
 
-import { auth } from '../../../firebase';
-import { connectAuthEmulator, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { LoginFromWelcomeScreen } from '../../firestore/auth';
 
 function LoginScreen({ navigation }) {
-    const [email, setEmail] = React.useState('');
-    const [password, setPassword] = React.useState('');
-    const [renderCount, setRenderCount] = React.useState(0);
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
 
     const handleLogin = () => {
-      signInWithEmailAndPassword(auth, email, password)
-      .then(userCredentials => {
-        const user = userCredentials.user;
-        setRenderCount(renderCount+1);
-        console.log('Logged in with:', user.email);
-      })
-      .catch(error => alert(error.message));
+      LoginFromWelcomeScreen(email, password);
     }
 
     return (
