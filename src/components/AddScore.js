@@ -84,7 +84,7 @@ export default function AddScore() {
           <SelectList
             setSelected={(val) => setSelectedCourse(val)}
             data={courses}
-            save="value"
+            save="key"
             placeholder="Select course"
             maxHeight={200}
           />
