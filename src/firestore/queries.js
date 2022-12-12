@@ -14,6 +14,28 @@ export const fetchGolfCoursesFromFireStore = async () => {
     return golfCoursesData;
 };
 
+export const fetchRoundScoresFromFireStore = async (course_id) => {
+    const roundScores = await getDocs(collection(db, "round_scores"))
+        .then(qsnap => qsnap.docs.map(doc => ({id: doc.id, ...doc.data()})));
+    const filteredRoundScores = roundScores.filter( round => course_id === round.course.id);
+    const sortedFilteredRoundScores = filteredRoundScores.sort((a, b) => (a.score > b.score) ? 1 : -1);
+    const scoresOnListFormat = [];
+    for (let i=0; i<sortedFilteredRoundScores.length; i++) {
+        const rs = sortedFilteredRoundScores[i];
+        const user_name = await (await getDoc(doc(db, "users", rs.user.id))).data().name;
+        const club_object = await (await getDoc(doc(db, "golf_courses", rs.course.id)));
+        scoresOnListFormat.push({
+            id: i+1, 
+            name: user_name, 
+            club: club_object.data().name, 
+            score: rs.score, 
+            date: rs.date.toDate().toDateString(),
+            par: club_object.data().par
+        });
+    }
+    return scoresOnListFormat;
+};
+
 
 export const updateUserDoc = async (props) => {
     let successfullUpdate = false;

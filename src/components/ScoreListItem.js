@@ -8,7 +8,7 @@ export default function ScoreListItem(props) {
             <View style={{flex: 8, paddingLeft: 10}}>
                 <View style={styles.topInfoBox}>
                     <View>
-                        <Text>15/11/2022</Text>
+                        <Text>{props.date}</Text>
                         <Text style={{fontWeight: 'bold'}}>{props.name}</Text>
                     </View>
                     <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
@@ -18,9 +18,8 @@ export default function ScoreListItem(props) {
                         </View>
                     </View>
                 </View>
-                <Text style={{paddingTop: 5}}>{props.club} 18 Holes / Par 70</Text>
+                <Text style={{paddingTop: 5}}>{props.club} 18 Holes / Par {props.par}</Text>
             </View>
-            {/* <Text style={styles.idBox}>{props.score}</Text> */}
         </View>
     );
 }
