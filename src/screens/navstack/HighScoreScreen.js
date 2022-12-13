@@ -62,13 +62,6 @@ export default function HighScoreScreen() {
                 />
             </View>
 
-            <View style={{display: 'flex', flexDirection: 'row', padding: 10, width: '95%'}}>
-                <Text style={{flex: 1, textAlign: 'center'}}>#</Text>
-                <Text style={{flex: 3, textAlign: 'center'}}>Name</Text>
-                <Text style={{flex: 3, textAlign: 'center'}}> Club</Text>
-                <Text style={{flex: 1, textAlign: 'center'}}>Score</Text>
-            </View>
-
             <ScrollView 
                 style={styles.scrollViewBox}
                 refreshControl={
@@ -109,7 +102,6 @@ const styles = StyleSheet.create({
     dropdownContainer: {
         padding: 10,
         width: '100%',
-        marginBottom: 25,
     },
     scrollViewBox: {
         width: '100%',
