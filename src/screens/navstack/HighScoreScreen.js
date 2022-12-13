@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, ScrollView, Text, View, Button, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, RefreshControl, Text, View, Button, Image, TouchableOpacity } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list'
 import ScoreListItem from '../../components/ScoreListItem';
 
@@ -7,9 +7,14 @@ import { useIsFocused } from '@react-navigation/native';
 
 import { fetchGolfCoursesFromFireStore, fetchRoundScoresFromFireStore } from '../../firestore/queries';
 
+const wait = async (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
 export default function HighScoreScreen() {
 
     const isFocused = useIsFocused();
+    const [refreshing, setRefreshing] = React.useState(false);
 
     const [golfCourses, setGolfCourses] = React.useState([]);
     const [dropDownGolfCourses, setDropDownGolfCourses] = React.useState([]);
@@ -23,8 +28,14 @@ export default function HighScoreScreen() {
     }, [isFocused]);
 
     React.useEffect(() => {
-        getRoundScoresData();
+        getRoundScoresData(selected);
     }, [selected]);
+
+    const onRefresh = React.useCallback((gc_selected) => {
+        setRefreshing(true);
+        getRoundScoresData(gc_selected);
+        wait(2000).then(() => setRefreshing(false));
+    }, []);
 
     const getAndSetGolfCoursesData = async () => {
         const golfCoursesData = await fetchGolfCoursesFromFireStore();
@@ -34,8 +45,8 @@ export default function HighScoreScreen() {
         )));
     }
 
-    const getRoundScoresData = async () => {
-        const roundScoresData = await fetchRoundScoresFromFireStore(selected);
+    const getRoundScoresData = async (golf_course_id) => {
+        const roundScoresData = await fetchRoundScoresFromFireStore(golf_course_id);
         setRoundScores(roundScoresData);
     }
 
@@ -58,7 +69,15 @@ export default function HighScoreScreen() {
                 <Text style={{flex: 1, textAlign: 'center'}}>Score</Text>
             </View>
 
-            <ScrollView style={styles.scrollViewBox}>
+            <ScrollView 
+                style={styles.scrollViewBox}
+                refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={() => onRefresh(selected)}
+                    />
+                }
+            >
                 <View style={styles.scoreListContainer}>
                     {roundScores.map((round) => (
                         <View key={round.id} style={{marginTop: 8, marginBottom: 8}}>
