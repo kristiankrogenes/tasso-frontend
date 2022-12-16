@@ -15,10 +15,11 @@ export default function NavStack() {
             screenOptions={{ headerStyle: { backgroundColor: '#427AA1' } }}
         >
             <Tab.Screen 
-                name="HIGH SCORES"
+                name="HighScore"
                 component={HighScoreScreen}
                 options={{
-                    tabBarLabel: 'high_score',
+                    title: "High Score",
+                    tabBarLabel: 'High Score',
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="table" color={color} size={size} />
                     ),
