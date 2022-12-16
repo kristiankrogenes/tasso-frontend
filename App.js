@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import NavStack from './src/components/NavStack';
 import { WelcomeScreen, LoginScreen, RegisterScreen } from './src/screens/welcome/index';
-import { EditProfileScreen } from './src/screens/navstack/index';
+import { EditProfileScreen, WeatherScreen } from './src/screens/navstack/index';
 
 
 export default function App() {
@@ -53,6 +53,15 @@ export default function App() {
           component={EditProfileScreen} 
           options={{
             title: "Edit Profile", 
+            headerLeft: null, 
+            gestureEnabled: false
+          }}
+        />
+        <Stack.Screen 
+          name="Weather"
+          component={WeatherScreen} 
+          options={{
+            title: "Weather Forecast", 
             headerLeft: null, 
             gestureEnabled: false
           }}
