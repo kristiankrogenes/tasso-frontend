@@ -14,10 +14,32 @@ export const fetchGolfCoursesFromFireStore = async () => {
     return golfCoursesData;
 };
 
+export const fetchAllPersonalScoresFromFirestore = async (user_id) => {
+    const roundScores = await getDocs(collection(db, "round_scores"))
+        .then(qsnap => qsnap.docs.map(doc => ({id: doc.id, ...doc.data()})));
+    const filteredRoundScores = roundScores.filter(round => user_id === round.user.id);
+    const sortedFilteredRoundScores = filteredRoundScores.sort((a, b) => (a.score > b.score) ? 1 : -1);
+    const fixedRounds = [];
+    for (let i=0; i<sortedFilteredRoundScores.length; i++) {
+        const rs = sortedFilteredRoundScores[i];
+        const user_name = await getDoc(doc(db, "users", rs.user.id));
+        const club_name = await getDoc(doc(db, "golf_courses", rs.course.id));
+        fixedRounds.push({
+            id: i+1, 
+            name: user_name.data().name, 
+            club: club_name.data().name,
+            score: rs.score, 
+            date: rs.date.toDate().toDateString(),
+            par: club_name.data().par
+        });
+    }
+    return fixedRounds;
+}
+
 export const fetchRoundScoresFromFireStore = async (course_id) => {
     const roundScores = await getDocs(collection(db, "round_scores"))
         .then(qsnap => qsnap.docs.map(doc => ({id: doc.id, ...doc.data()})));
-    const filteredRoundScores = roundScores.filter( round => course_id === round.course.id);
+    const filteredRoundScores = roundScores.filter(round => course_id === round.course.id);
     const sortedFilteredRoundScores = filteredRoundScores.sort((a, b) => (a.score > b.score) ? 1 : -1);
     const scoresOnListFormat = [];
     for (let i=0; i<sortedFilteredRoundScores.length; i++) {
