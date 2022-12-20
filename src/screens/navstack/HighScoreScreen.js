@@ -3,29 +3,24 @@ import { StyleSheet, ScrollView, RefreshControl, Text, View, Button, Image, Touc
 import { SelectList } from 'react-native-dropdown-select-list'
 import ScoreListItem from '../../components/ScoreListItem';
 
-import { useIsFocused } from '@react-navigation/native';
+import { fetchRoundScoresFromFireStore } from '../../firestore/queries';
 
-import { fetchGolfCoursesFromFireStore, fetchRoundScoresFromFireStore } from '../../firestore/queries';
-
-const wait = async (timeout) => {
-    return new Promise(resolve => setTimeout(resolve, timeout));
-}
+import { useDispatch, useSelector  } from "react-redux";
 
 export default function HighScoreScreen() {
 
-    const isFocused = useIsFocused();
-    const [refreshing, setRefreshing] = React.useState(false);
+    const thisUsersHomeClub = {
+        id: useSelector((state) => state.user.value.home_club.id), 
+        name: useSelector((state) => state.user.value.home_club.name)
+    };
+    const courses = useSelector((state) => state.golfCourses.value);
+    const dropDownGolfCourses = courses.map(course => ({key: course.id, value: course.name}));
 
-    const [golfCourses, setGolfCourses] = React.useState([]);
-    const [dropDownGolfCourses, setDropDownGolfCourses] = React.useState([]);
+    const [refreshing, setRefreshing] = React.useState(false);
 
     const [roundScores, setRoundScores] = React.useState([]);
 
-    const [selected, setSelected] = React.useState("");
-
-    React.useEffect(() => {
-        getAndSetGolfCoursesData();
-    }, [isFocused]);
+    const [selected, setSelected] = React.useState(thisUsersHomeClub.id);
 
     React.useEffect(() => {
         getRoundScoresData(selected);
@@ -33,17 +28,9 @@ export default function HighScoreScreen() {
 
     const onRefresh = React.useCallback((gc_selected) => {
         setRefreshing(true);
-        getRoundScoresData(gc_selected);
-        wait(2000).then(() => setRefreshing(false));
+        const updateScores = async () => await getRoundScoresData(gc_selected).then(() => setRefreshing(false));
+        updateScores();
     }, []);
-
-    const getAndSetGolfCoursesData = async () => {
-        const golfCoursesData = await fetchGolfCoursesFromFireStore();
-        setGolfCourses(golfCoursesData);
-        setDropDownGolfCourses(golfCoursesData.map(course => (
-            {key: course.id, value: course.name}
-        )));
-    }
 
     const getRoundScoresData = async (golf_course_id) => {
         const roundScoresData = await fetchRoundScoresFromFireStore(golf_course_id);
@@ -57,7 +44,7 @@ export default function HighScoreScreen() {
                     setSelected={(val) => setSelected(val)} 
                     data={dropDownGolfCourses} 
                     save="key"
-                    placeholder="Choose club"
+                    defaultOption={{key: thisUsersHomeClub.id, value: thisUsersHomeClub.name}}
                     maxHeight={200}
                 />
             </View>

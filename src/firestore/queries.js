@@ -1,11 +1,10 @@
 import { db } from '../../firebase';
 import { collection, getDocs, getDoc, addDoc, updateDoc, doc } from "firebase/firestore";
 
-export const fetchUserDataFromFirestore = async (uid) => {
+export const fetchUserDataFromFirestore = async (uid, email) => {
     const newData = await getDoc(doc(db, "users", uid));
     const courseData = await getDoc(doc(db, "golf_courses", newData.data().home_club.id));
-
-    return {id: newData.id, name: newData.data().name, home_club: courseData.data().name, hcp: newData.data().hcp};
+    return {id: newData.id, email: email, name: newData.data().name, home_club: {id: newData.data().home_club.id, ...courseData.data()}, hcp: newData.data().hcp};
 };
 
 export const fetchGolfCoursesFromFireStore = async () => {
@@ -21,6 +20,7 @@ export const fetchAllPersonalScoresFromFirestore = async (user_id) => {
     const sortedFilteredRoundScores = filteredRoundScores.sort((a, b) => (a.score > b.score) ? 1 : -1);
     const fixedRounds = [];
     for (let i=0; i<sortedFilteredRoundScores.length; i++) {
+
         const rs = sortedFilteredRoundScores[i];
         const user_name = await getDoc(doc(db, "users", rs.user.id));
         const club_name = await getDoc(doc(db, "golf_courses", rs.course.id));
@@ -61,7 +61,6 @@ export const fetchRoundScoresFromFireStore = async (course_id) => {
 
 export const updateUserDoc = async (props) => {
     let successfullUpdate = false;
-    console.log("KJØH", doc(db, "golf_courses", "9vy4hnLTM25nVuhmbPOv").id);
     const userRef = doc(db, "users", props.uid);
     try {
         await updateDoc(userRef, {
