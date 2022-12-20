@@ -1,40 +1,29 @@
 import * as React from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity, View, Keyboard, ScrollView, Alert } from 'react-native';
-import { SelectList } from 'react-native-dropdown-select-list'
-import { useIsFocused } from '@react-navigation/native';
+import { SelectList } from 'react-native-dropdown-select-list';
 
-import { fetchGolfCoursesFromFireStore } from '../../firestore/queries';
 import { fetchWeatherFromLonLat } from '../../api/weatherAPI';
 
 import WeatherListItem from '../../components/WeatherListItem';
 
+import { useDispatch, useSelector  } from "react-redux";
+
 function WeatherScreen({ navigation }) {
 
-    const isFocused = useIsFocused();
+    const thisUsersHomeClub = {
+        id: useSelector((state) => state.user.value.home_club.id), 
+        name: useSelector((state) => state.user.value.home_club.name)
+    };
+    const golfCourses = useSelector((state) => state.golfCourses.value);
+    const dropDownGolfCourses = golfCourses.map(course => ({key: course.id, value: course.name}));
 
     const [weatherData, setWeatherData] = React.useState([]);
-    const [golfCourses, setGolfCourses] = React.useState([]);
-    const [dropDownGolfCourses, setDropDownGolfCourses] = React.useState([]);
     const [selected, setSelected] = React.useState("");
-
-    React.useEffect(() => {
-        getAndSetGolfCoursesData();
-    }, [isFocused]);
-
-    const getAndSetGolfCoursesData = async () => {
-        const golfCoursesData = await fetchGolfCoursesFromFireStore();
-        setGolfCourses(golfCoursesData);
-        setDropDownGolfCourses(golfCoursesData.map(course => (
-            {key: course.id, value: course.name}
-        )));
-    }
 
     const handleClickWeatherAPIButton = async () => {
         if (selected === "") {
-            console.log("NOT.")
             createAlert();
         } else {
-            console.log("YES.")
             const courseToCheck = golfCourses.find(course => {
                 return course.id === selected
             });
@@ -61,7 +50,8 @@ function WeatherScreen({ navigation }) {
                     setSelected={(val) => setSelected(val)} 
                     data={dropDownGolfCourses} 
                     save="key"
-                    placeholder="Choose club"
+                    // placeholder="Choose club"
+                    defaultOption={{key: thisUsersHomeClub.id, value: thisUsersHomeClub.name}}
                     maxHeight={200}
                 />
             </View>
