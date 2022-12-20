@@ -3,39 +3,25 @@ import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, Vi
 import { SelectList } from 'react-native-dropdown-select-list';
 import { useIsFocused } from '@react-navigation/native';
 
-import { fetchGolfCoursesFromFireStore, updateUserDoc } from '../../firestore/queries';
+import { updateUserDoc } from '../../firestore/queries';
+
+import { useDispatch, useSelector  } from "react-redux";
 
 function EditProfileScreen({ route, navigation }) {
-    const [user, setUser] = React.useState({});
-    const [email, setEmail] = React.useState('');
-    const [name, setName] = React.useState('');
-    const [handicap, setHandicap] = React.useState('');
-    const [homeClub, setHomeClub] = React.useState('');
+    const loggedInUser = useSelector((state) => state.user.value);
 
-    const [golfCourses, setGolfCourses] = React.useState([]);
-    const [dropDownGolfCourses, setDropDownGolfCourses] = React.useState([]);
+    const courses = useSelector((state) => state.golfCourses.value);
+    const dropDownGolfCourses = courses.map(course => ({key: course.id, value: course.name}));
 
-    const isFocused = useIsFocused();
-
-    React.useEffect(() => {
-        setName(route.params.name);
-        setHandicap(route.params.hcp);
-        setHomeClub(route.params.home_club);
-        getAndSetGolfCoursesData();
-    }, [isFocused]);
-
-    const getAndSetGolfCoursesData = async () => {
-        const golfCoursesData = await fetchGolfCoursesFromFireStore();
-        setGolfCourses(golfCoursesData);
-        setDropDownGolfCourses(golfCoursesData.map(course => (
-            {key: course.id, value: course.name}
-        )));
-    }
+    const [email, setEmail] = React.useState(loggedInUser.email);
+    const [name, setName] = React.useState(loggedInUser.name);
+    const [handicap, setHandicap] = React.useState(loggedInUser.hcp);
+    const [homeClub, setHomeClub] = React.useState(loggedInUser.home_club.id);
 
     const handleSaveButton = async () => {
-        const docUpdated = await updateUserDoc({uid: route.params.id, name: name, hcp: handicap, club: homeClub});
+        const docUpdated = await updateUserDoc({uid: loggedInUser.id, name: name, hcp: handicap, club: homeClub});
         if (docUpdated) {
-            navigation.navigate("Profile");
+            navigation.navigate("Welcome");
         }
     };
 
@@ -56,8 +42,9 @@ function EditProfileScreen({ route, navigation }) {
                         <TextInput
                             placeholder={email}
                             value={email}
-                            // onChangeText={text => setEmail(text)}
-                            style={styles.input}
+                            editable={false}
+                            onChangeText={text => setEmail(text)}
+                            style={[styles.input, {color: 'grey', backgroundColor: 'lightgrey'}]}
                         />
                     </View>
                     <View style={styles.inputBox}>
@@ -84,8 +71,8 @@ function EditProfileScreen({ route, navigation }) {
                             setSelected={(val) => setHomeClub(val)} 
                             data={dropDownGolfCourses} 
                             save="key"
-                            // dropdownShown={False}
                             maxHeight={200}
+                            placeholder={loggedInUser.home_club.name}
                         />
                     </View>
                 </View>

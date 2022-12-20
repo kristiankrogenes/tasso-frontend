@@ -1,7 +1,6 @@
 import { auth, db } from '../../firebase';
 import { collection, getDocs, addDoc, updateDoc, doc, setDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 export const LoginFromWelcomeScreen = (email, password) => {
     signInWithEmailAndPassword(auth, email, password)
@@ -9,6 +8,11 @@ export const LoginFromWelcomeScreen = (email, password) => {
             const user = userCredentials.user;
             console.log('Successfully logged in with:', user.uid, user.email);
         })
+        .catch(error => alert(error.message));
+}
+
+export const LogoutUser = () => {
+    signOut(auth)
         .catch(error => alert(error.message));
 }
 

@@ -9,14 +9,11 @@ import {
 } from "react-native";
 import AddScore from "../../components/AddScore";
 
-
 export default function HomeScreen({ navigation }) {
 
 	return (
 		<View style={styles.homeScreenContainer}>
-
 			<AddScore />
-
 			<View style={styles.buttonCointainer}>
 				<TouchableOpacity
 					style={styles.button}

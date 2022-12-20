@@ -4,20 +4,36 @@ import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, Vi
 import { auth } from '../../../firebase';
 import { useIsFocused } from '@react-navigation/native';
 
+import { fetchUserDataFromFirestore, fetchGolfCoursesFromFireStore } from '../../firestore/queries';
+import { login, logout, setCourses } from "../../store/index";
+import { useDispatch, useSelector  } from "react-redux";
 
 function LoginScreen({ navigation }) {
 
-  const isFocused = useIsFocused();
+    const dispatch = useDispatch();
+    const isFocused = useIsFocused();
 
-  React.useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      if (user) {
-        navigation.navigate("NavStack");
-      } else {
-        console.log("Not logged in.");
-      }
-    });
-  }, [isFocused]);
+    React.useEffect(() => {
+        getGolfCoursesAndSetGolfCoursesDataToReduxStore();
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                getLoggedInUserAndSetUserDataToReduxStore(user.uid, user.email);
+                navigation.navigate("NavStack");
+            } else {
+                console.log("Not logged in.");
+            }
+        });
+    }, [isFocused]);
+
+    const getLoggedInUserAndSetUserDataToReduxStore = async (uid, email) => {
+        const userData = await fetchUserDataFromFirestore(uid, email);
+        dispatch(login({id: userData.id, email: userData.email, name: userData.name, home_club: userData.home_club, hcp: userData.hcp}));
+    }
+
+    const getGolfCoursesAndSetGolfCoursesDataToReduxStore = async () => {
+        const golfCoursesData = await fetchGolfCoursesFromFireStore();
+        dispatch(setCourses(golfCoursesData));
+    }
 
     return (
         <View style={{flex: 1}}>

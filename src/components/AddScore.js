@@ -3,57 +3,39 @@ import { View, StyleSheet, ScrollView, Text } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { SelectList } from "react-native-dropdown-select-list";
 import { Form, FormItem } from "react-native-form-component";
-import { auth, db } from "../../firebase";
+import { db } from "../../firebase";
 import { collection, addDoc, getDocs, getDoc, doc } from "firebase/firestore";
-import { useIsFocused } from "@react-navigation/native";
+
+import { useDispatch, useSelector  } from "react-redux";
 
 export default function AddScore() {
+
+  const loggedInUser = useSelector((state) => state.user.value);
+  const golfCourses = useSelector((state) => state.golfCourses.value);
+  const dropDownGolfCourses = golfCourses.map(course => ({key: course.id, value: course.name}));
+
+  const thisUsersHomeClub = {
+    id: useSelector((state) => state.user.value.home_club.id), 
+    name: useSelector((state) => state.user.value.home_club.name)
+  };
+
   const [selectedCourse, setSelectedCourse] = React.useState("");
   const [score, setScore] = React.useState();
   const [date, setDate] = React.useState(new Date());
-  const [courses, setCourses] = React.useState();
-  const [userId, setUserId] = React.useState();
   const scoreInput = React.useRef();
-
-  const isFocused = useIsFocused();
-
-  React.useEffect(() => {
-    fetchGolfCourses();
-  }, [isFocused]);
-
-  React.useEffect(() => {
-    const loggedInUser = auth.currentUser;
-    setUserId(loggedInUser.uid);
-  }, [isFocused]);
-
-  const fetchGolfCourses = async () => {
-    const courseList = [];
-    await getDocs(collection(db, "golf_courses")).then((snapShot) => {
-      snapShot.forEach((item) => {
-        const course = {
-          key: item.id,
-          value: item.data().name,
-          par: item.data().par,
-        };
-        courseList.push(course);
-      });
-    });
-    setCourses(courseList);
-  };
 
   const handleSubmit = () => {
     try {
       addNewScoreDoc();
       setDate(new Date());
       setScore(null);
-      setSelectedCourse(null);
     } catch (e) {}
   };
 
   const addNewScoreDoc = async () => {
     try {
       const docRef = await addDoc(collection(db, `round_scores`), {
-        user: doc(db, "users", userId),
+        user: doc(db, "users", loggedInUser.id),
         score: parseInt(score),
         course: doc(db, "golf_courses", selectedCourse),
         date: date,
@@ -83,9 +65,9 @@ export default function AddScore() {
 
           <SelectList
             setSelected={(val) => setSelectedCourse(val)}
-            data={courses}
+            data={dropDownGolfCourses}
             save="key"
-            placeholder="Select course"
+            defaultOption={{key: thisUsersHomeClub.id, value: thisUsersHomeClub.name}}
             maxHeight={200}
           />
           <DateTimePicker
