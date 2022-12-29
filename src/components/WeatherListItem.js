@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     },
     idBox: {
         flex: 1,
-        textAlign: 'center'
+        textAlign: 'center',
+        fontSize: Platform.OS === "ios" ? 15 : 12,
     },
 });

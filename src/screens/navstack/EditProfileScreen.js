@@ -28,7 +28,7 @@ function EditProfileScreen({ route, navigation }) {
     return (
         <KeyboardAvoidingView
             style={styles.container}
-            behavior="padding"
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             onPress={() => {Keyboard.dismiss}}
         >
             <View style={{width: "100%"}}>

@@ -73,6 +73,8 @@ export default function AddScore() {
           <DateTimePicker
             value={date}
             display="default"
+            mode="date"
+            // disabled={true}
             onChange={(e) => setDate(new Date(e.nativeEvent.timestamp))}
             maximumDate={new Date()}
             themeVariant="light"

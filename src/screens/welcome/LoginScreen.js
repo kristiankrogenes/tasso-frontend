@@ -24,11 +24,11 @@ function LoginScreen({ navigation }) {
     return (
         <KeyboardAvoidingView
             style={styles.container}
-            behavior="padding"
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             onPress={() => {Keyboard.dismiss}}
         >
             <View style={{width: '150%', marginTop: 30, alignItems: 'center', backgroundColor: '#344D67'}}>
-                <Text style={{fontFamily: "Noteworthy", fontSize: 50, fontWeight: 'bold', color: '#FFFFFF'}}>TASSO</Text>
+                <Text style={{fontSize: 50, fontWeight: 'bold', color: '#FFFFFF'}}>TASSO</Text>
             </View>
             <View style={styles.inputContainer}>
                 <TextInput
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
       color: 'white',
-      fontFamily: 'Noteworthy',
+      // fontFamily: 'Noteworthy',
       fontWeight: '700',
       fontSize: 16,
     },

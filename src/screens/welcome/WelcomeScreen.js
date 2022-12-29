@@ -44,7 +44,7 @@ function LoginScreen({ navigation }) {
           >
             <View style={{flex: 1, alignItems: 'center', justifyContent: 'space-between', margin: 50}}>
               <View style={{width: '100%', marginTop: 30, alignItems: 'center', backgroundColor: '#344D6775', borderRadius: 25}}>
-                <Text style={{fontFamily: "Noteworthy", fontSize: 50, fontWeight: 'bold', color: '#FFFFFF'}}>TASSO</Text>
+                <Text style={{fontSize: 50, fontWeight: 'bold', color: '#FFFFFF'}}>TASSO</Text>
               </View>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontFamily: 'Noteworthy',
+    // fontFamily: 'Noteworthy',
     fontWeight: '700',
     fontSize: 16,
   },

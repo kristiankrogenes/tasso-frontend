@@ -12,10 +12,6 @@ import {
 } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 
-// import { auth, db } from '../../../firebase';
-// import { collection, getDocs, addDoc, updateDoc, doc, setDoc } from "firebase/firestore";
-// import { connectAuthEmulator, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-
 import { fetchGolfCoursesFromFireStore } from '../../firestore/queries';
 import { useIsFocused } from '@react-navigation/native';
 import { RegisterNewUser } from '../../firestore/auth';
@@ -30,8 +26,6 @@ function LoginScreen({ navigation }) {
 
     const [dropDownGolfCourses, setDropDownGolfCourses] = React.useState([]);
 
-    // const [renderCount, setRenderCount] = React.useState(0);
-
     const isFocused = useIsFocused();
 
     React.useEffect(() => {
@@ -44,49 +38,19 @@ function LoginScreen({ navigation }) {
         {key: course.id, value: course.name}
       )));
     }
-    // React.useEffect(() => {
-    //     const unsubscribe = auth.onAuthStateChanged(user => {
-    //         if (user) {
-    //             console.log("User logged in.");
-    //             navigation.navigate("NavStack");
-    //         } else {
-    //             console.log("Not logged in.");
-    //         }
-    //     });
-    // }, [renderCount]);
-
-    // const addNewUserDoc = async (uid) => {
-    //   try {
-    //     const docRef = await setDoc(doc(db, `users/${uid}`), {
-    //         name: fullName, 
-    //         hcp: handicap, 
-    //         home_club: doc(db, "golf_courses", homeClub)});
-    //     // console.log("Document written with ID: ", docRef.id);
-    //   } catch (e) {
-    //     console.error("Error adding document: ", e);
-    //   }
-    // }
 
     const handleSignUp = () => {
-      // createUserWithEmailAndPassword(auth, email, password)
-      //   .then(userCredentials => {
-      //     const user = userCredentials.user;
-      //     setRenderCount(renderCount+1);
-      //   //   console.log('Registered with:', user.email, user.uid);
-      //     addNewUserDoc(user.uid);
-      //   })
-      //   .catch(error => alert(error.message));
       RegisterNewUser(email, password, fullName, handicap, homeClub);
     }
 
     return (
         <KeyboardAvoidingView
             style={styles.container}
-            behavior="padding"
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             onPress={() => {Keyboard.dismiss}}
         >
             <View style={{width: '150%', marginTop: 30, alignItems: 'center', backgroundColor: '#344D67'}}>
-                <Text style={{fontFamily: "Noteworthy", fontSize: 50, fontWeight: 'bold', color: '#FFFFFF'}}>TASSO</Text>
+                <Text style={{fontSize: 50, fontWeight: 'bold', color: '#FFFFFF'}}>TASSO</Text>
             </View>
             <View style={styles.inputContainer}>
                 <TextInput
@@ -182,7 +146,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
       color: 'white',
-      fontFamily: 'Noteworthy',
+      // fontFamily: 'Noteworthy',
       fontWeight: '700',
       fontSize: 16,
     },
