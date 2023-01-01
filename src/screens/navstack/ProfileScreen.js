@@ -29,7 +29,7 @@ export default function ProfileScreen({ navigation }) {
                     <Text numberOfLines={2} style={styles.nameText}>{loggedInUser.name}</Text>
                 </View>
                 <View style={styles.userInfoContainer}>
-                    <Text style={styles.clubNameBox}>{loggedInUser.home_club.name}</Text>
+                    <Text numberOfLines={2} style={styles.clubNameBox}>{loggedInUser.home_club.name}</Text>
                     <Text style={styles.hcpBox}>{loggedInUser.hcp}</Text>
                 </View>
             </View>
