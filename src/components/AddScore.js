@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, StyleSheet, ScrollView, Text } from "react-native";
+import { View, StyleSheet, ScrollView, Text, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { SelectList } from "react-native-dropdown-select-list";
 import { Form, FormItem } from "react-native-form-component";
@@ -7,6 +7,7 @@ import { db } from "../../firebase";
 import { collection, addDoc, getDocs, getDoc, doc } from "firebase/firestore";
 
 import { useDispatch, useSelector  } from "react-redux";
+import { checkIfValidScore } from "../utils/helpers/helpers";
 
 export default function AddScore() {
 
@@ -34,17 +35,40 @@ export default function AddScore() {
 
   const addNewScoreDoc = async () => {
     try {
-      const docRef = await addDoc(collection(db, `round_scores`), {
-        user: doc(db, "users", loggedInUser.id),
-        score: parseInt(score),
-        course: doc(db, "golf_courses", selectedCourse),
-        date: date,
-      });
-      console.log("Round written with ID: ", docRef.id);
+      if (checkIfValidScore(score)) {
+        const docRef = await addDoc(collection(db, `round_scores`), {
+          user: doc(db, "users", loggedInUser.id),
+          score: parseInt(score),
+          course: doc(db, "golf_courses", selectedCourse),
+          date: date,
+        });
+        console.log("Round written with ID: ", docRef.id);
+        createSuccesfullAlert();
+      } else {
+        createAlert();
+      }
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   };
+
+  const createAlert = () =>
+    Alert.alert(
+        "Not valid score",
+        "You have to choose a score between 18 and 200",
+        [
+            { text: "OK", onPress: () => console.log("OK Pressed") }
+        ]
+  );
+
+  const createSuccesfullAlert = () =>
+  Alert.alert(
+      "Score added",
+      "Congratulations with your golf round!",
+      [
+          { text: "OK", onPress: () => console.log("OK Pressed") }
+      ]
+);
 
   return (
     <View style={styles.dropdownContainer}>
@@ -110,5 +134,6 @@ const styles = StyleSheet.create({
   datePicker: {
     marginTop: 30,
     marginRight: 260,
+    width: "100%"
   },
 });

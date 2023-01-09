@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard, Alert } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { useIsFocused } from '@react-navigation/native';
 
 import { updateUserDoc } from '../../firestore/queries';
 
 import { useDispatch, useSelector  } from "react-redux";
+import { checkIfValidHandicap } from "../../utils/helpers/helpers";
 
 function EditProfileScreen({ route, navigation }) {
     const loggedInUser = useSelector((state) => state.user.value);
@@ -19,11 +20,25 @@ function EditProfileScreen({ route, navigation }) {
     const [homeClub, setHomeClub] = React.useState(loggedInUser.home_club.id);
 
     const handleSaveButton = async () => {
-        const docUpdated = await updateUserDoc({uid: loggedInUser.id, name: name, hcp: handicap, club: homeClub});
-        if (docUpdated) {
-            navigation.navigate("Welcome");
+        if (checkIfValidHandicap(handicap)) {
+            const docUpdated = await updateUserDoc({uid: loggedInUser.id, name: name, hcp: handicap, club: homeClub});
+            if (docUpdated) {
+                navigation.navigate("Welcome");
+            }
+        } else {
+            createAlert();
         }
+
     };
+
+    const createAlert = () =>
+        Alert.alert(
+            "Not valid handicap",
+            "You have to choose a handicap between -25 and 54",
+            [
+                { text: "OK", onPress: () => console.log("OK Pressed") }
+            ]
+    );
 
     return (
         <KeyboardAvoidingView
